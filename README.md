@@ -1,7 +1,10 @@
 Kafka in Docker
 ===
 
-This repository provides everything you need to run Kafka in Docker.
+This repository provides everything you need to run Kafka in Docker. It also provides a Kafka-Manager instance
+so that you can have a look on what's happening in the Kafka.
+
+This is mainly intented to provide to the developper a convienent Kafka installation. This is not for production use!
 
 For convenience also contains a packaged proxy that can be used to get data from
 a legacy Kafka 7 cluster into a dockerized Kafka 8.
@@ -14,23 +17,21 @@ in the same container. This means:
 
 * No dependency on an external Zookeeper host, or linking to another container
 * Zookeeper and Kafka are configured to work together out of the box
+* Kafka-Manager is also preconfigured out of the box (the cluster declaration is still needed)
 
 Run
 ---
 
 ```bash
-docker run -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` --env ADVERTISED_PORT=9092 spotify/kafka
+docker run -p 2181:2181 -p 9092:9092 -p 9000:9000 --env ADVERTISED_HOST=127.0.0.1 --env ADVERTISED_PORT=9092 xenix/kafka
 ```
 
-```bash
-export KAFKA=`docker-machine ip \`docker-machine active\``:9092
-kafka-console-producer.sh --broker-list $KAFKA --topic test
-```
+Using Kafka-manager
+-------------------
 
-```bash
-export ZOOKEEPER=`docker-machine ip \`docker-machine active\``:2181
-kafka-console-consumer.sh --zookeeper $ZOOKEEPER --topic test
-```
+The first time you are connecting to http://localhost:9000, there is no cluster defined. Add one with "localhost:2181" as Zookeeper instance, and enable JMX.
+
+Then, you can have a look to the cluster.
 
 Running the proxy
 -----------------
@@ -54,12 +55,12 @@ docker run -p 2181:2181 -p 9092:9092 \
 
 In the box
 ---
-* **spotify/kafka**
+* **xenix/kafka**
 
-  The docker image with both Kafka and Zookeeper. Built from the `kafka`
+  The docker image with Kafka, Zookeeper and KafkaManager. Built from the `kafka`
   directory.
 
-* **spotify/kafkaproxy**
+* **xenix/kafkaproxy**
 
   The docker image with Kafka, Zookeeper and a Kafka 7 proxy that can be
   configured with a set of topics to mirror.
@@ -67,15 +68,15 @@ In the box
 Public Builds
 ---
 
-https://registry.hub.docker.com/u/spotify/kafka/
+https://registry.hub.docker.com/u/xenix/kafka/
 
-https://registry.hub.docker.com/u/spotify/kafkaproxy/
+https://registry.hub.docker.com/u/xenix/kafkaproxy/
 
 Build from Source
 ---
 
-    docker build -t spotify/kafka kafka/
-    docker build -t spotify/kafkaproxy kafkaproxy/
+    docker build -t xenix/kafka kafka/
+    docker build -t xenix/kafkaproxy kafkaproxy/
 
 Todo
 ---
